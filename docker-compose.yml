@@ -1,0 +1,17 @@
+# create the filrbrowser service
+
+services:
+  filebrowser-noauth:
+    image: filebrowser/filebrowser:v2.22.4
+    container_name: filebrowser-noauth
+    restart: "no"
+    ports:
+      - 8089:80
+    command: --port 80 --database /data/filebrowser.db --noauth
+  filebrowser-auth:
+    image: filebrowser/filebrowser:v2.22.4
+    container_name: filebrowser-auth
+    restart: "no"
+    ports:
+      - 8088:80
+    command: --port 80 --database /data/filebrowser.db --username admin --password admin
