@@ -1,25 +1,44 @@
 [tool.poetry]
 name = "filebrowser-client"
-version = "0.1.0rc1"
-description = "A simple CLI client for filebrowser"
-authors = ["Mohamed Cherkaoui <chermed@gmail.com>"]
-license = "MIT"
+version = "0.1.0"
+description = "An async CLI client and library for filebrowser API"
+authors = ["Mohamed CHERKAOUI <chermed@gmail.com>"]
+maintainers = ["Mohamed CHERKAOUI <chermed@gmail.com>"]
 readme = "README.md"
+license = "MIT"
 packages = [{include = "filebrowser_client"}]
+keywords = ["filebrowser", "cli", "client", "asyncio"]
+repository = "https://github.com/chermed/filebrowser-client"
+documentation = "https://github.com/chermed/filebrowser-client"
+homepage = "https://github.com/chermed/filebrowser-client"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Topic :: System :: Filesystems",
+    "Topic :: Utilities",
+]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.7.2,<4.0"
 aiohttp = {extras = ["speedups"], version = "^3.8.3"}
+fire = "^0.4.0"
+colorama = "^0.4.6"
 
 [tool.poetry.scripts]
 filebrowser-client = "filebrowser_client:main"
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^2.20.0"
-isort = "^5.10.1"
-black = "^22.10.0"
+mypy = "^0.982"
 pylint = "^2.15.5"
-ipdb = "^0.13.9"
+black = "^22.10.0"
+isort = "^5.10.1"
+pre-commit = "^2.20.0"
 
 [build-system]
 requires = ["poetry-core"]

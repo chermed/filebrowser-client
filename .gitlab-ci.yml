@@ -1,0 +1,32 @@
+stages:
+  - "test"
+  - "deploy"
+
+test:
+  stage: test
+  image: python:3.7.15-buster
+  script:
+    - pip3 install poetry==1.2.2
+    - poetry install
+    - poetry run pre-commit run --all-files
+  tags:
+    - pve
+    - local
+    - docker
+
+deploy:
+  stage: deploy
+  image: python:3.7.15-buster
+  variables:
+    PYPI_USERNAME: $PYPI_USERNAME
+    PYPI_PASSWORD: $PYPI_PASSWORD
+  only:
+    - tags
+  script:
+    - pip3 install poetry==1.2.2
+    - poetry install
+    - poetry publish --build --username "$PYPI_USERNAME" --password "$PYPI_PASSWORD"
+  tags:
+    - pve
+    - local
+    - docker

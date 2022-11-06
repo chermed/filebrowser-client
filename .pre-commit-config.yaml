@@ -4,27 +4,45 @@ repos:
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
-      - id: requirements-txt-fixer
 
-  - repo: https://github.com/psf/black
-    rev: 22.10.0
+  - repo: local
     hooks:
       - id: black
+        name: black
+        entry: poetry run black
+        language: system
+        types: [python]
+        args: []
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+  - repo: local
     hooks:
       - id: isort
+        name: isort
+        entry: poetry run isort
+        language: system
+        types: [python]
+        args: []
 
-  # pylint
   - repo: local
     hooks:
       - id: pylint
         name: pylint
-        entry: pylint
+        entry: poetry run pylint
         language: system
         types: [python]
         args: [
             "-rn", # Only display messages
             "-sn", # Don't display the score
+          ]
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy
+        language: system
+        types: [python]
+        args: [
+            "--ignore-missing-imports", # Ignore missing imports
+            "--follow-imports=skip", # Don't follow imports
           ]

@@ -1,7 +1,6 @@
 # Overview
 
-The `filebrowser-client` is an async client library for the [Filebrowser](https://github.com/filebrowser/filebrowser) API.
-It provides a cli client and a library to interact with the API.
+The `filebrowser-client` is an async client CLI and library for the [Filebrowser](https://github.com/filebrowser/filebrowser) API.
 
 ## Installation
 
@@ -13,9 +12,9 @@ The easiest way to install the `filebrowser-client` is to use `pip`:
 
 ## Features
 
--   [x] Download a file or a directory
--   [x] Upload a file or a directory
--   [x] Delete a file or a directory
+-   [x] Download a remote file or a directory
+-   [x] Upload a file or a directory to a remote location
+-   [x] Delete a file or a directory from a remote location
 
 ## Usage
 
@@ -23,36 +22,20 @@ The `filebrowser-client` provides a cli client and a library to interact with th
 
 ### CLI
 
-Run `filebrowser-client --help` to see the available commands.
+Run `filebrowser-client --help` to see the global options and the available commands.
 
 ```bash
-    $ filebrowser-client --help
-    usage: filebrowser-client [-h] [--version] --host HOST [--username USERNAME] [--password PASSWORD] [--recaptcha RECAPTCHA] [--insecure]
-                            [--concurrent CONCURRENT] [--override] [--source SOURCE] [--destination DESTINATION]
-                            {upload,download,delete}
+    filebrowser-client --help
+    Usage: filebrowser-client [OPTIONS] COMMAND [ARGS]...
 
-    Filebrowser async client CLI
+    Options:
+    --help  Show this message and exit.
 
-    positional arguments:
-    {upload,download,delete}
-                            Command to execute
 
-    optional arguments:
-    -h, --help            show this help message and exit
-    --version             show program's version number and exit
-    --host HOST           Filebrowser host
-    --username USERNAME   Filebrowser username
-    --password PASSWORD   Filebrowser password
-    --recaptcha RECAPTCHA
-                            Filebrowser recaptcha
-    --insecure            Disable SSL verification
-    --concurrent CONCURRENT
-                            Number of concurrent requests
-    --override            Override existing files
-    --source SOURCE       Source file or directory
-    --destination DESTINATION
-                            Destination file or directory
-
+    Commands:
+    download  Download a file or a directory from a remote location
+    upload    Upload a file or a directory to a remote location
+    delete    Delete a file or a directory from a remote location
 ```
 
 ### Library
@@ -62,25 +45,30 @@ Run `filebrowser-client --help` to see the available commands.
     from filebrowser_client import FilebrowserClient
 
     client = FilebrowserClient("http://localhost:8080", "admin", "admin")
-    asyncion.run(client.connect())
+    asyncio.run(client.connect())
 
     asyncio.run(client.download("/path/to/file", "/path/to/destination"))
 ```
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License
 
 ## Development
 
-The `filebrowser-client` is developed using `poetry`, `pre-commit` and `Pylint`.
+The `filebrowser-client` is developed using `poetry` and `pre-commit`.
 ### Prerequisites
 
--   [Python 3.8+](https://www.python.org/downloads/)
+-   [Python 3.7+](https://www.python.org/downloads/)
 -   [Poetry](https://python-poetry.org/docs/#installation)
 -   [Pre-commit](https://pre-commit.com/#install)
--   [Pylint](https://www.pylint.org/#install)
 
+### Setup
+
+```bash
+    poetry install
+    pre-commit install
+```
 ## Build
 
 ```bash

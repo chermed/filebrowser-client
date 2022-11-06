@@ -49,7 +49,7 @@ class FilebrowserClient:
             headers.update(extras)
         return headers
 
-    async def connect(self) -> str:
+    async def connect(self) -> Optional[str]:
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 self.login_api_url,
@@ -120,9 +120,9 @@ class FilebrowserClient:
         remote_path: str,
         override: bool = False,
         concurrent: int = 10,
-    ) -> str:
-        local_path = require_string(local_path, "source")
-        remote_path = require_string(remote_path, "destination")
+    ) -> Optional[List[str]]:
+        local_path = require_string(local_path, "local path")
+        remote_path = require_string(remote_path, "remote path")
         if not os.path.exists(local_path):
             raise FileNotFoundError("Local path does not exist")
         remote_path = remote_path.lstrip("/")
@@ -177,18 +177,26 @@ class FilebrowserClient:
                             shutil.copy(
                                 temp_zip_file.name, os.path.join(temp_dir, filename)
                             )
-                        return [
-                            shutil.copytree(temp_dir, local_path, dirs_exist_ok=True)
-                        ]
+                        list_files: List[str] = []
+                        for item in os.listdir(temp_dir):
+                            list_files.append(
+                                shutil.move(
+                                    os.path.join(temp_dir, item),
+                                    os.path.join(local_path),
+                                )
+                            )
+                        return list_files
 
     async def download(self, local_path: str, remote_path: str) -> List[str]:
-        local_path = require_string(local_path, "destination")
-        remote_path = require_string(remote_path, "source")
+        local_path = require_string(local_path, "local path")
+        remote_path = require_string(remote_path, "remote path")
         if os.path.exists(local_path) and not os.path.isdir(local_path):
             raise FileExistsError("Local path is not a directory")
         if not os.path.exists(local_path):
             os.makedirs(local_path, exist_ok=True)
         remote_path = remote_path.strip("/")
+        if not local_path.endswith("/"):
+            local_path = local_path + "/"
         return await self._download_zip(local_path=local_path, remote_path=remote_path)
 
     ## Deleting the files

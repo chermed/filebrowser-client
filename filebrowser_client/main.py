@@ -1,67 +1,82 @@
-import argparse
 import asyncio
+
+import fire
+from colorama import Fore, Style
 
 from .client import FilebrowserClient
 from .version import __version__
 
-UPLOAD, DOWNLOAD, DELETE = "upload", "download", "delete"
 
+class FilebrowserCli:
+    """A CLI for Filebrowser"""
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Filebrowser async client")
-    parser.add_argument(
-        "command", choices=(UPLOAD, DOWNLOAD, DELETE), help="Command to execute"
-    )
-    parser.add_argument("--version", action="version", version=__version__)
-    parser.add_argument(
-        "--host",
-        default="http://localhost:8080",
-        required=True,
-        help="Filebrowser host",
-    )
-    parser.add_argument("--username", default="admin", help="Filebrowser username")
-    parser.add_argument("--password", default="admin", help="Filebrowser password")
-    parser.add_argument("--recaptcha", default="", help="Filebrowser recaptcha")
-    parser.add_argument(
-        "--insecure", action="store_true", help="Disable SSL verification"
-    )
-    parser.add_argument(
-        "--concurrent", type=int, default=10, help="Number of concurrent requests"
-    )
-    parser.add_argument(
-        "--override", action="store_true", help="Override existing files"
-    )
-    parser.add_argument("--source", help="Source file or directory")
-    parser.add_argument("--destination", help="Destination file or directory")
-    return parser.parse_args()
+    def __init__(
+        self,
+        host,
+        username: str = "",
+        password: str = "",
+        recaptcha: str = "",
+        insecure: bool = False,
+    ):
+        self.client = FilebrowserClient(
+            host=host,
+            username=username,
+            password=password,
+            recaptcha=recaptcha,
+            insecure=insecure,
+        )
+
+    def download(self, remote_path: str, local_path: str):
+        """download a remote file or directory to local."""
+        asyncio.run(self.client.connect())
+        couroutine = self.client.download(
+            local_path=local_path, remote_path=remote_path
+        )
+        asyncio.run(couroutine)
+        print(
+            Fore.GREEN
+            + f"the download of {remote_path} to {local_path} is done successfully"
+            + Style.RESET_ALL
+        )
+
+    def upload(
+        self,
+        local_path: str,
+        remote_path: str,
+        override: bool = False,
+        concurrent: int = 10,
+    ):
+        """upload a local file or directory to filebrowser."""
+        asyncio.run(self.client.connect())
+        couroutine = self.client.upload(
+            local_path=local_path,
+            remote_path=remote_path,
+            override=override,
+            concurrent=concurrent,
+        )
+        asyncio.run(couroutine)
+        print(
+            Fore.GREEN
+            + f"the upload of {local_path} to {remote_path} is done successfully"
+            + Style.RESET_ALL
+        )
+
+    def delete(self, path: str):
+        """delete a remote file or directory."""
+        asyncio.run(self.client.connect())
+        couroutine = self.client.delete(remote_path=path)
+        for response in asyncio.run(couroutine):
+            print(
+                Fore.GREEN
+                + f"The object {response} is removed successfully"
+                + Style.RESET_ALL
+            )
 
 
 def main():
-    args = parse_args()
-    client = FilebrowserClient(
-        host=args.host,
-        username=args.username,
-        password=args.password,
-        recaptcha=args.recaptcha,
-        insecure=args.insecure,
-    )
-    asyncio.run(client.connect())
-    if args.command == UPLOAD:
-        couroutine = client.upload(
-            local_path=args.source,
-            remote_path=args.destination,
-            override=args.override,
-            concurrent=args.concurrent,
-        )
-        for response in asyncio.run(couroutine):
-            print(f"An upload to {response} is done successfully")
-    elif args.command == DOWNLOAD:
-        couroutine = client.download(
-            local_path=args.destination, remote_path=args.source
-        )
-        for response in asyncio.run(couroutine):
-            print(f"A download to {response} is done successfully")
-    elif args.command == DELETE:
-        couroutine = client.delete(remote_path=args.source)
-        for response in asyncio.run(couroutine):
-            print(f"The object {response} is removed successfully")
+    """The main function."""
+    fire.Fire(FilebrowserCli)
+
+
+if __name__ == "__main__":
+    main()
