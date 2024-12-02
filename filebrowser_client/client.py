@@ -210,3 +210,15 @@ class FilebrowserClient:
             async with session.delete(resource_api, headers=headers) as response:
                 response.raise_for_status()
                 return [resource_api]
+
+    ## List the dir
+
+    async def list(self, remote_path: str) -> List[str]:
+        remote_path = require_string(remote_path, "path")
+        async with aiohttp.ClientSession() as session:
+            remote_path = remote_path.lstrip("/")
+            resource_api = self.resources_api_url + "/" + remote_path
+            headers = self.get_headers()
+            async with session.get(resource_api, headers=headers) as response:
+                response.raise_for_status()
+                return await response.json()
